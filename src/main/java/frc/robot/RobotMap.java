@@ -35,6 +35,14 @@ public class RobotMap {
    public static int armMotorPort = 5;
 
 
+
+   //Constants
+
+   //Software Limits
+   public static final int forwardLimit = 1000;
+   public static final int reverseLimit = -2000;
+
+   
   	/**
 	 * Which PID slot to pull gains from. Starting 2018, you can choose from
 	 * 0,1,2 or 3. Only the first two (0,1) are visible in web-based

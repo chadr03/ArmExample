@@ -8,9 +8,13 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.buttons.Button;
+import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.ManualArmCommand;
+import frc.robot.commands.SetMotionMagicArmCommand;
 import frc.robot.commands.dashBoardSetMotionMagicArmCommand;
+import frc.robot.commands.ZeroSensorCommand;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -23,10 +27,23 @@ public class OI {
   // You create one by telling it which joystick it's on and which button
   // number it is.
   public Joystick joystick = new Joystick(RobotMap.joystickPort);
-  // Button button = new JoystickButton(stick, buttonNumber);
+  Button xButton = new JoystickButton(joystick, 1);
+  Button aButton = new JoystickButton(joystick, 2);
+
   public OI(){
     SmartDashboard.putData("ManualArm", new ManualArmCommand());
     SmartDashboard.putData("Motion Magic Arm", new dashBoardSetMotionMagicArmCommand());
+    SmartDashboard.putData("Zero Sensor", new ZeroSensorCommand());
+    SmartDashboard.putData("Arm Up", new SetMotionMagicArmCommand(0));
+    SmartDashboard.putData("Arm Down", new SetMotionMagicArmCommand(-1260));
+
+    xButton.whenPressed(new SetMotionMagicArmCommand(0));
+    aButton.whenPressed(new SetMotionMagicArmCommand(-1260));
+
+
+    
+
+
 
   }
   // There are a few additional built in buttons you can use. Additionally,

@@ -33,8 +33,14 @@ public class ArmSubsystem extends Subsystem {
   public void initDefaultCommand() {
     // Set the default command for a subsystem here.
     setDefaultCommand(new ManualArmCommand());
-    armMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, RobotMap.kPIDLoopIdx, RobotMap.kTimeoutMs);
-		armMotor.setSensorPhase(false);
+
+    //Sets up the encoder to be absolute version of the ctre mag encoder
+    armMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute, RobotMap.kPIDLoopIdx, RobotMap.kTimeoutMs);
+    
+    //Sets encoder phase this should be where the encoder counter goes up when the talon lights are green and down when lights are red
+    //switch the boolan if it is counting backwards.  Motion magic will go haywire if this is not correct    
+    armMotor.setSensorPhase(false);
+
 		armMotor.setInverted(false);
 
 		/* Set relevant frame periods to be at least as fast as periodic rate */
@@ -53,31 +59,53 @@ public class ArmSubsystem extends Subsystem {
 		armMotor.config_kP(0, 1.0, RobotMap.kTimeoutMs);
 		armMotor.config_kI(0, 0, RobotMap.kTimeoutMs);
 		armMotor.config_kD(0, 0, RobotMap.kTimeoutMs);
-		/* set acceleration and vcruise velocity - see documentation */
+  
+    /* set acceleration and vcruise velocity - see documentation */
 		armMotor.configMotionCruiseVelocity(15000, RobotMap.kTimeoutMs);
 		armMotor.configMotionAcceleration(6000, RobotMap.kTimeoutMs);
-		/* zero the sensor */
-		armMotor.setSelectedSensorPosition(0, RobotMap.kPIDLoopIdx, RobotMap.kTimeoutMs);
+  
+    /* zero the sensor */
+    // for an absolute sensor this will not actually be zero, but the current location
+    armMotor.setSelectedSensorPosition(0, RobotMap.kPIDLoopIdx, RobotMap.kTimeoutMs);
+    
+    
+    //Use these settings to turn on/off software limits and set the limits
+    armMotor.configForwardSoftLimitEnable(false);
+    armMotor.configForwardSoftLimitThreshold(RobotMap.forwardLimit);
+
+    armMotor.configReverseSoftLimitEnable(false);
+    armMotor.configReverseSoftLimitThreshold(RobotMap.reverseLimit);
 
   }
 
-
+  //This is to manually drive the arm with an input speed
   public void manualArm(double speed){
     armMotor.set(ControlMode.PercentOutput, speed);
   }
 
-
+  //This is to use motion magic to drive the arm.  It used the golbal targetPosition variable.  If you want to change the position
+  // the setTargetPositoin() method must be used
   public void motionMagicArm(){
     armMotor.set(ControlMode.MotionMagic, targetPosition);
   }
 
+  //This sets the value of the golbal variable targetPosition
   public void setTargetPosition(int position){
     targetPosition = position;
   }
 
+  //This gets the encoder value that tell the arm position
   public int getArmPosition() {
     return this.armMotor.getSelectedSensorPosition(0);
-    
+
   }
 
+
+  //This zeros the arm sensor.  When used in absolute mode it will not truly zero, but will give the absolute value and remove any
+  //large number due to multiple turns
+  public void zeroSensor(){
+    armMotor.setSelectedSensorPosition(0, RobotMap.kPIDLoopIdx, RobotMap.kTimeoutMs);
+    
+
+  }
 }
