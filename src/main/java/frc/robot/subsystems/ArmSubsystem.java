@@ -28,7 +28,8 @@ public class ArmSubsystem extends Subsystem {
 
  
   private int targetPosition = 0;
- 
+  private int maxVelocity = 0;
+
   @Override
   public void initDefaultCommand() {
     // Set the default command for a subsystem here.
@@ -55,14 +56,14 @@ public class ArmSubsystem extends Subsystem {
 
 		/* set closed loop gains in slot0 - see documentation */
 		armMotor.selectProfileSlot(RobotMap.kSlotIdx, RobotMap.kPIDLoopIdx);
-		armMotor.config_kF(0, 0.2, RobotMap.kTimeoutMs);
-		armMotor.config_kP(0, 1.0, RobotMap.kTimeoutMs);
+		armMotor.config_kF(0, 0.89, RobotMap.kTimeoutMs);
+		armMotor.config_kP(0, 6.0, RobotMap.kTimeoutMs);
 		armMotor.config_kI(0, 0, RobotMap.kTimeoutMs);
 		armMotor.config_kD(0, 0, RobotMap.kTimeoutMs);
   
     /* set acceleration and vcruise velocity - see documentation */
-		armMotor.configMotionCruiseVelocity(15000, RobotMap.kTimeoutMs);
-		armMotor.configMotionAcceleration(6000, RobotMap.kTimeoutMs);
+		armMotor.configMotionCruiseVelocity(1200, RobotMap.kTimeoutMs);
+		armMotor.configMotionAcceleration(1000, RobotMap.kTimeoutMs);
   
     /* zero the sensor */
     // for an absolute sensor this will not actually be zero, but the current location
@@ -98,6 +99,22 @@ public class ArmSubsystem extends Subsystem {
   public int getArmPosition() {
     return this.armMotor.getSelectedSensorPosition(0);
 
+  }
+  //This gets the absolute position of the arm
+  public int getAbsolutePosition(){
+    return this.armMotor.getSensorCollection().getPulseWidthPosition();
+  }
+  //This gets the velocity of the arm
+  public int getArmVelocity(){
+    return this.armMotor.getSelectedSensorVelocity(0);
+  }
+
+  public int getMaxVelocity(){
+    int currentVelocity = getArmVelocity();
+      if(currentVelocity>maxVelocity){
+        maxVelocity=currentVelocity;
+      }
+    return maxVelocity;
   }
 
 

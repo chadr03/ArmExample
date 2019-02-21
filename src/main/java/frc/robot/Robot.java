@@ -52,6 +52,9 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     SmartDashboard.putNumber("Arm Position", Robot.armSubsystem.getArmPosition());
+    SmartDashboard.putNumber("Arm Absolute Pos",Robot.armSubsystem.getAbsolutePosition());
+    SmartDashboard.putNumber("Arm Velocity", Robot.armSubsystem.getArmVelocity());
+    SmartDashboard.putNumber("Max Velocity", Robot.armSubsystem.getMaxVelocity());
   }
 
   /**
