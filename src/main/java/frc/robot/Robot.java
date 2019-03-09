@@ -55,6 +55,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Arm Absolute Pos",Robot.armSubsystem.getAbsolutePosition());
     SmartDashboard.putNumber("Arm Velocity", Robot.armSubsystem.getArmVelocity());
     SmartDashboard.putNumber("Max Velocity", Robot.armSubsystem.getMaxVelocity());
+    SmartDashboard.putBoolean("Forward Limit", Robot.armSubsystem.isForwardLimit());
+    SmartDashboard.putBoolean("Reverse Limit", Robot.armSubsystem.isReverseLimit());
   }
 
   /**

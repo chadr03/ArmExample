@@ -7,8 +7,11 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.ParamEnum;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
+import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
@@ -25,7 +28,6 @@ public class ArmSubsystem extends Subsystem {
   // Put methods for controlling this subsystem
   // here. Call these from Commands.
   WPI_TalonSRX armMotor = new WPI_TalonSRX(RobotMap.armMotorPort);
-
  
   private int targetPosition = 0;
   private int maxVelocity = 0;
@@ -35,7 +37,22 @@ public class ArmSubsystem extends Subsystem {
     // Set the default command for a subsystem here.
     setDefaultCommand(new ManualArmCommand());
 
-    //Sets up the encoder to be absolute version of the ctre mag encoder
+    armMotor.configFactoryDefault();
+
+    armMotor.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector,
+													                  LimitSwitchNormal.NormallyOpen,
+                                            RobotMap.kTimeoutMs);
+    
+    armMotor.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector,
+													                  LimitSwitchNormal.NormallyOpen,
+													                  RobotMap.kTimeoutMs);
+    
+    
+
+    
+    //Configure Talon to clear sensor position on Reverse  Limit "1 clears it 0 does not"
+    armMotor.configSetParameter(ParamEnum.eClearPositionOnLimitR, 1, 0, 0, 10);
+     //Sets up the encoder to be absolute version of the ctre mag encoder
     armMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute, RobotMap.kPIDLoopIdx, RobotMap.kTimeoutMs);
     
     //Sets encoder phase this should be where the encoder counter goes up when the talon lights are green and down when lights are red
@@ -102,6 +119,7 @@ public class ArmSubsystem extends Subsystem {
   }
   //This gets the absolute position of the arm
   public int getAbsolutePosition(){
+    
     return this.armMotor.getSensorCollection().getPulseWidthPosition();
   }
   //This gets the velocity of the arm
@@ -117,6 +135,13 @@ public class ArmSubsystem extends Subsystem {
     return maxVelocity;
   }
 
+  public boolean isForwardLimit(){
+    return armMotor.getSensorCollection().isFwdLimitSwitchClosed();
+  }
+
+  public boolean isReverseLimit(){
+    return armMotor.getSensorCollection().isRevLimitSwitchClosed();
+  }
 
   //This zeros the arm sensor.  When used in absolute mode it will not truly zero, but will give the absolute value and remove any
   //large number due to multiple turns
